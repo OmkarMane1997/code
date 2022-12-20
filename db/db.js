@@ -1,25 +1,29 @@
-const mysql = require('mysql2/promise');
 
-const mysqlConnection = async ({ querys, values = [] }) => {
-   let connection = await mysql.createConnection({
-    host: "sql6.freesqldatabase.com",
-    port:"3306",
-    user: "sql6584162",
-    password: "TMuhLc6Dfj",
-    database: "sql6584162",
-   });
-   
- try {
-   var data;
-   await connection.connect()
-   .then(() => connection.query(querys))
-   .then(([rows, fields]) => {
-       data = rows;
-   });
-   await connection.end();
-   return data;
- } catch (error) {
-   return { error };
- }
-}
-module.exports= mysqlConnection;
+// let connection =  mysql.createConnection({
+//   host: "sql6.freesqldatabase.com",
+//   port:"3306",
+//   user: "sql6584162",
+//   password: "TMuhLc6Dfj",
+//   database: "sql6584162",
+//  });
+
+// get the client
+const mysql = require("mysql2/promise");
+require("dotenv").config();
+// create the connection to database
+const connectionData = mysql.createConnection({
+  host: process.env.HOST,
+  user: process.env.USER,
+  password: process.env.PASSWORD,
+  database: process.env.DATABASE,
+  port: process.env.DBPORT,
+});
+// function creating for checking which DB Connected
+const DBconnection = async function main(data) {
+  const connection = await connectionData;
+  const [rows, fields] = await connection.execute(data);
+  // await connection.end()
+  return rows;
+};
+// Exporting the Data based Connection and Function
+module.exports = DBconnection;

@@ -3,7 +3,6 @@ const userRegistrationController = require('../controller/userRegistrationContro
 
 
 route.post(`/register`, userRegistrationController.register);
-route.post(`/login`, userRegistrationController.login);
-route.get(`/logout`, userRegistrationController.logout);
+
 
 module.exports = route;

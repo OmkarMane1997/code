@@ -1,0 +1,45 @@
+
+
+@import url('https://fonts.googleapis.com/css2?family=News+Cycle:wght@400;700&family=Nunito:wght@200;300;400;500;600;700&display=swap');
+
+
+body {
+  margin: 0;
+  font-family: Nunito, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+
+
+.td-none{
+    text-decoration: none;
+}
+
+.form-wrap{
+    padding-left: 5em;
+    padding-right: 5em;
+}
+
+@media (max-width:992px){
+    .login-register-wrap {
+        visibility: hidden;
+    }
+
+    .form-wrap{
+        padding-left: 1em;
+        padding-right: 1em;
+    }
+
+    .image-wrap{
+        padding: 2em;
+        margin: auto;
+    }
+}

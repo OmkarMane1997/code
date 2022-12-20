@@ -16,6 +16,7 @@ const app = express();
 // body parser
 app.use(express.urlencoded({ extended: true }))
 app.use(express.json())
+app.use(cookieParser(process.env.TOKEN_SECRET))
 //middleware
 app.use(cors())
 
@@ -23,9 +24,11 @@ app.use(cors())
 
  // route modules
  const registrationRoute = require('./route/registrationRoute');
+ const userLoginController = require('./route/loginRoute')
 
  // primary Router  
-app.use(`/api/v1/registration`, registrationRoute)
+app.use(`/api/v1/registration`, registrationRoute);
+app.use(`/api/v1/login`, userLoginController);
 
 
 
