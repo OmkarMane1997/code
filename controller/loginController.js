@@ -2,14 +2,15 @@ const validator = require("validator");
 const DBconnection = require('../db/db')
 const bcrypt = require('bcryptjs')
 const { StatusCodes} = require('http-status-codes')
-const { createAccessToken } = require('../util/token')
+const { createAccessToken,decodeToken } = require('../util/token')
+const jwt = require('jsonwebtoken')
 
 const userLoginController={
    
     login: async (req,res)=>{
 
         const {email,password}= req.body;
-          console.log(req.body)
+          // console.log(req.body)
         if (validator.isEmail(email)== false) {
             return res.status(StatusCodes.BAD_REQUEST).json({ msg: " Enter Only Valid Email" }); 
             }
@@ -58,8 +59,79 @@ const userLoginController={
                  }
     },
     refreshToken: async (req,res)=>{
-      res.status(StatusCodes.OK).json({ msg: "refreshToken Controller" })
+      try {
+        const rfToken = req.signedCookies.refreshToken;
+        // console.log(rf);
+        if(!rfToken)  {
+          return res.status(StatusCodes.BAD_REQUEST).json({msg: "Session Expired , Login Again.."})
+        }
+       
+
+        jwt.verify(rfToken,process.env.TOKEN_SECRET,(err)=>{
+          if(err){
+            return res.status(StatusCodes.BAD_REQUEST).json({msg:"Invalid Access Token.. Login again"})
+          }else{
+            const userId =decodeToken(rfToken) 
+            console.log(userId.id)
+            const accessToken = createAccessToken({id:userId.id})
+            // console.log('o:-',rfToken)
+           
+
+            res.status(StatusCodes.OK).json({accessToken })
+          }
+         })
+        } catch (err) {
+          return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg:err.message})
+        }
+      
+    },
+    resetPassword: async (req,res)=>{
+      try {
+        const id = req.user.id;           
+        const {oldPassword , newPassword} = req.body;
+        // console.log(req.body,id);
+
+        let findUser = `SELECT * FROM register WHERE id='${id}'`;
+        // console.log(findUser)
+
+        if (validator.isStrongPassword(oldPassword,{minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1})==false) {
+          return res.status(StatusCodes.BAD_REQUEST).json({ msg: `Old Password password Rules are not Match.` });    
+          }
+          if (validator.isStrongPassword(newPassword,{minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1})==false) {
+            return res.status(StatusCodes.BAD_REQUEST).json({ msg: `New Password password Rules are not Match.` });    
+            }
+
+        let result = await DBconnection(findUser)
+        console.log(result)
+
+        if (result.length>0) {
+
+          const isMatch = await bcrypt.compare(oldPassword ,result[0].password)
+          if (!isMatch) {
+            return res.status(StatusCodes.BAD_REQUEST).json({ msg: "Password Did not Match" });
+          }else{
+            const encPassword = await bcrypt.hash(newPassword,10);
+            const date = new Date()
+            let date2 = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 ))
+                    .toISOString()
+                    .split("T")[0];
+            let UpdateQuery = `UPDATE register SET  password="${encPassword}", updated_at="${date2}" WHERE id="${id}"`;
+            // console.log(UpdateQuery);
+            let result = await DBconnection(UpdateQuery);
+            return res.status(StatusCodes.OK).json({ msg: " Password reset",result })
+          }
+        } else {
+          return res.status(StatusCodes.BAD_REQUEST).json({ msg: "User Doesn't exists.." })
+          
+        }
+        // 
+
+      
+      } catch (err) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg:err.message})
+      }
     }
+
     
 }
 
