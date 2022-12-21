@@ -39,3 +39,8 @@ resetPassword:-http://localhost:4000/api/v1/login/resetPassword<br>
 Method:- Post<br>
 Data: NA.<br>
 header required:- refreshToken it generate the token need to pass the in header
+++++++++++++++++++++++++++<br>
+Profile:-http://localhost:4000/api/v1/login/profile<br>
+method:-Get<br>
+Data: NA.<br>
+header required:- refreshToken it generate the token need to pass the in header

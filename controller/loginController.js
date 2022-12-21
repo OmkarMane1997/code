@@ -130,6 +130,17 @@ const userLoginController={
       } catch (err) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg:err.message})
       }
+    },
+    profile: async(req,res)=>{
+      try {
+          let id= req.user.id;
+          let findUser = `SELECT id,name,email,created_at,updated_at FROM register WHERE id='${id}'`;
+          let result = await DBconnection(findUser)
+          console.log(result)
+          res.status(StatusCodes.OK).json({result })
+      } catch (err) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg:err.message})
+      }
     }
 
     
