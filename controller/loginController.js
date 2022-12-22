@@ -3,7 +3,10 @@ const DBconnection = require('../db/db')
 const bcrypt = require('bcryptjs')
 const { StatusCodes} = require('http-status-codes')
 const { createAccessToken,decodeToken } = require('../util/token')
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const sendMail = require('../middleware/mail');
+const Forgot_Password_Template = require('../template/Forgot_Password_Template');
+require("dotenv").config();
 
 const userLoginController={
    
@@ -141,7 +144,98 @@ const userLoginController={
       } catch (err) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg:err.message})
       }
-    }
+    },
+    generateForgotPasswordLink: async (req,res)=>{
+      try {
+
+        let email = req.body.email;
+        // console.log(email)
+
+        let findUser = `SELECT * FROM register WHERE email='${email}'`;
+        // console.log(findUser);
+        let result = await DBconnection(findUser)
+        if (result.length === 0) {
+         return res.status(StatusCodes.BAD_REQUEST).json({msg:"User is not Registered!"})
+        }
+
+        // console.log(result)
+        const Secrete = process.env.JWT_FORGOT_PASSWORD_LINK_GENERATE_SECRET+ result[0].password;
+        // console.log("S:-",Secrete)
+          const payload ={
+            id: result[0].id,
+            emailId : result[0].email
+          }
+          // console.log(payload)
+          const token = jwt.sign(payload,Secrete,{expiresIn:'10m'})
+          // console.log(token)
+
+          const link = `http://localhost:4000/api/v1/login/forgot-password/${result[0].id}/${token}`
+          console.log(link);
+          // mail code from here
+
+          const template = Forgot_Password_Template(result[0].name,link)
+          const subject = `Password link verification`;
+          sendMail(email,subject,template)
+
+
+        res.status(StatusCodes.OK).json({ msg: "Forgot Password Link Send!" })
+       } catch (err) {
+        return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg:err.message})
+       }
+    },
+    verify_link_and_password: async (req,res)=>{
+             try {
+                  console.log(req.params)
+                  const {id,token} =req.params;
+
+                  let findUser = `SELECT * FROM register WHERE id='${id}'`;
+                    // console.log(findUser);
+                    let result = await DBconnection(findUser)
+                    if (result.length === 0) {
+                    return res.status(StatusCodes.BAD_REQUEST).json({msg:"User is not Registered!"})
+                    }
+               const Secrete = process.env.JWT_FORGOT_PASSWORD_LINK_GENERATE_SECRET+ result[0].password;
+                    try {
+                      const payload = jwt.verify(token,Secrete)
+                      res.status(StatusCodes.OK).json({ msg: " Password Link",payload})
+                    } catch (err) {
+                      console.log(err.message)
+                      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg:err.message})
+                    }
+                  
+                 } catch (err) {
+                  return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg:err.message})
+                 }
+    },
+    Updating_By_Link_password: async (req,res)=>{
+      try {
+           console.log(req.params)
+           const {id,token} =req.params;
+           const {password, confirmPassword}=req.body;
+              
+           let findUser = `SELECT * FROM register WHERE id='${id}'`;
+             // console.log(findUser);
+             let result = await DBconnection(findUser)
+             if (result.length === 0) {
+             return res.status(StatusCodes.BAD_REQUEST).json({msg:"User is not Registered!"})
+             }
+        const Secrete = process.env.JWT_FORGOT_PASSWORD_LINK_GENERATE_SECRET+ result[0].password;
+             try {
+               const payload = jwt.verify(token,Secrete)
+            
+              console.log(req.body)
+              
+              res.status(StatusCodes.OK).json({ msg: " Password set successfully"})
+             } catch (err) {
+               console.log(err.message)
+               return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg:err.message})
+             }
+           
+          } catch (err) {
+           return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg:err.message})
+          }
+},
+
 
     
 }
