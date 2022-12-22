@@ -175,7 +175,7 @@ const userLoginController={
 
           const template = Forgot_Password_Template(result[0].name,link)
           const subject = `Password link verification`;
-          sendMail(email,subject,template)
+          // sendMail(email,subject,template)
 
 
         res.status(StatusCodes.OK).json({ msg: "Forgot Password Link Send!" })
@@ -213,7 +213,7 @@ const userLoginController={
            const {id,token} =req.params;
            const {password, confirmPassword}=req.body;
               
-           let findUser = `SELECT * FROM register WHERE id='${id}'`;
+              let findUser = `SELECT * FROM register WHERE id='${id}'`;
              // console.log(findUser);
              let result = await DBconnection(findUser)
              if (result.length === 0) {
@@ -224,6 +224,25 @@ const userLoginController={
                const payload = jwt.verify(token,Secrete)
             
               console.log(req.body)
+             
+               // PassWord Validation and Return Password Score.
+               if (validator.isStrongPassword(password,{minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1})==false) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ msg: `minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1` });    
+                }
+
+                if (validator.equals(confirmPassword,password)===false) {
+                return res.status(StatusCodes.BAD_REQUEST).json({ msg: `Password is didn't Match` });    
+                  }
+                  
+                const encPassword = await bcrypt.hash(password,10);
+            const date = new Date()
+            let date2 = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 ))
+                    .toISOString()
+                    .split("T")[0];
+            let UpdateQuery = `UPDATE register SET  password="${encPassword}", updated_at="${date2}" WHERE id="${id}"`;
+            // console.log(UpdateQuery);
+            let result = await DBconnection(UpdateQuery);
+                    console.log(result);
               
               res.status(StatusCodes.OK).json({ msg: " Password set successfully"})
              } catch (err) {
