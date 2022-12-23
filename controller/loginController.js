@@ -169,7 +169,8 @@ const userLoginController={
           const token = jwt.sign(payload,Secrete,{expiresIn:'10m'})
           // console.log(token)
 
-          const link = `http://localhost:4000/api/v1/login/forgot-password/${result[0].id}/${token}`
+          // const link = `http://localhost:4000/api/v1/login/forgot-password/${result[0].id}/${token}`;
+          const link = `http://localhost:3000/Forgot_password/${result[0].id}/${token}`;
           console.log(link);
           // mail code from here
 
@@ -197,7 +198,7 @@ const userLoginController={
                const Secrete = process.env.JWT_FORGOT_PASSWORD_LINK_GENERATE_SECRET+ result[0].password;
                     try {
                       const payload = jwt.verify(token,Secrete)
-                      res.status(StatusCodes.OK).json({ msg: " Password Link",payload})
+                      res.status(StatusCodes.OK).json({ msg: "Link Active",payload})
                     } catch (err) {
                       console.log(err.message)
                       return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg:err.message})

@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import sideImage from "../assets/image.png";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
+import { useNavigate,NavLink } from "react-router-dom";
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -128,7 +128,8 @@ function Login() {
           <p className="text-center mt-5">Don't have an account?
             <span className="text-primary" onClick={() => navigate("/login")}>Sign Up</span>
           </p>
-          <p className="text-center text-primary">Forgot your password?</p>
+          <p className='text-center'><NavLink to={'/Forgot_password'} className=" text-primary">Forgot your password?</NavLink></p>
+          
         </div>
       </div>
     </div>
