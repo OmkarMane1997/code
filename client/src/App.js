@@ -6,6 +6,7 @@ import Register from './Components/Register'
 import { ToastContainer } from 'react-toastify'
 import ForgotPassword from './Components/Forgot_Password'
 import PasswordUpdate from './Components/Password_update'
+import EmailVerification from './Components/EmailVerification'
 
 function App(props) {
 
@@ -20,6 +21,7 @@ function App(props) {
         <Route path={`/dashboard`} element={<Dashboard />} />
         <Route path={`/Forgot_password`} element={<ForgotPassword/>} />
         <Route path={`/Forgot_password/:id/:token`} element={<PasswordUpdate/>}></Route>
+        <Route path={'/EmailVerification/:id/:token' }  element={<EmailVerification/>}/>
       </Routes>
     </BrowserRouter>
 

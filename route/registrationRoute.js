@@ -3,6 +3,7 @@ const userRegistrationController = require('../controller/userRegistrationContro
 
 
 route.post(`/register`, userRegistrationController.register);
+route.post(`/email-verification/:id/:token`, userRegistrationController.registerEmailVerification);
 
 
 module.exports = route;
