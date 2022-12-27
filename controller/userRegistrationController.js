@@ -4,6 +4,8 @@ const DBconnection = require('../db/db')
 const bcrypt = require('bcryptjs')
 require("dotenv").config();
 const jwt = require('jsonwebtoken');
+const EmailVerificationLink = require('../template/EmailVerificationLink')
+const sendMail = require('../middleware/mail');
 const userRegistrationController={
     register: async (req,res)=>{
         try {
@@ -66,7 +68,10 @@ const userRegistrationController={
                                  console.log(link);
 
                                 //  mail sending code here 
-
+                                const template = EmailVerificationLink(insert[0].name,link)
+                                const subject = `Email Verification Link`;
+                               await sendMail(email,subject,template)
+                      
 
 
                       return   res.status(StatusCodes.OK).json({ msg: " Registration SuccessFull"}); 

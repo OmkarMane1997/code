@@ -7,6 +7,8 @@ const jwt = require('jsonwebtoken');
 const sendMail = require('../middleware/mail');
 const Forgot_Password_Template = require('../template/Forgot_Password_Template');
 require("dotenv").config();
+const EmailVerificationLink = require('../template/EmailVerificationLink')
+// const sendMail = require('../middleware/mail');
 
 const userLoginController={
    
@@ -33,6 +35,30 @@ const userLoginController={
                     const isMatch = await bcrypt.compare(password ,result[0].password)
                     if (!isMatch) {
                       return res.status(StatusCodes.BAD_REQUEST).json({ msg: "Password Did not Match" });
+                    }
+
+                    if (result[0].email_verification_status == 0) {
+
+                      const Secrete =  process.env.JWT_FORGOT_PASSWORD_LINK_GENERATE_SECRET+ result[0].email_verification_secrete;
+                      // console.log("S:-",Secrete)
+                      const userId =result[0].id;
+                        const payload ={
+                          id: userId,
+                          emailId : result[0].email
+                        }
+                        // console.log(payload)
+                        const token =jwt.sign(payload,Secrete,{expiresIn:'10m'});
+
+                        //  const link = `http://localhost:4000/api/v1/registration/register/email-verification/${userId}/${token}`;
+                         const link = `http://localhost:3000/EmailVerification/${userId}/${token}`;
+                         console.log(link);
+
+                         //  mail sending code here 
+                         const template = EmailVerificationLink(result[0].name,link)
+                         const subject = `Email Verification Link`;
+                         sendMail(email,subject,template)
+
+                      return res.status(StatusCodes.BAD_REQUEST).json({ msg: "Email Verification Not Done link send to mail please verify  " });
                     }
                     
                         // generate token 
@@ -175,8 +201,8 @@ const userLoginController={
           // mail code from here
 
           const template = Forgot_Password_Template(result[0].name,link)
-          const subject = `Password link verification`;
-          // sendMail(email,subject,template)
+          const subject = `Reset Your Password`;
+          sendMail(email,subject,template)
 
 
         res.status(StatusCodes.OK).json({ msg: "Forgot Password Link Send!" })
