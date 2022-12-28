@@ -1,0 +1,136 @@
+import React, { useState } from 'react'
+import sideImage from "../assets/image.png";
+import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from 'react-redux';
+import { loginUser } from '../slices/authSlice';
+import validator from 'validator';
+import  axios  from 'axios';
+
+
+
+function Login() {
+
+  const [userLoginData, setUserLoginData] = useState({
+    email: "",
+    password: ""
+  });
+  const [checked, setChecked] = useState(false);
+  const [buttonStatus, setButtonStatus] = useState(false)
+  const URL = "http://localhost:4000/api/v1/login"
+
+  const navigate = useNavigate();
+
+
+  const dispatch = useDispatch()
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUserLoginData({ ...userLoginData, [name]: value });
+  };
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    //email
+    if (validator.isEmail(userLoginData.email) === false) {
+      return toast.error("Enter valid Email")
+    }
+    // password 
+    if (validator.isStrongPassword(userLoginData.password) === false) {
+      return toast.error("Password should be combination of one uppercase , one lower case, one special char, one digit and min 8 , max 20")
+    }
+    // dispatch(loginUser({ email, password }))
+    
+          try {
+            // button disable when click 
+            setButtonStatus(true)
+            // console.log(`${URL}/register`)
+            const result = await axios.post(`${URL}`, userLoginData);
+            // console.log('result:-',result);
+            toast.success(result.data.msg);
+            setButtonStatus(false);
+            navigate("/login");
+
+          } catch (err) {
+            // console.log("err:-",err.response.data)
+            toast.error(err.response.data.msg);
+              // button disable when click 
+            setButtonStatus(false)
+          }
+
+  };
+  const handleCheckbox = async () => {
+    setChecked(!checked);
+    const user = {
+      email: "email",
+      password: "password"
+    }
+    //persisting the user credentials in localStorage and session
+    if (checked) {
+      sessionStorage.setItem("user", user);
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      sessionStorage.removeItem("user");
+      localStorage.removeItem("user");
+    }
+  }
+  return <div className="container-fluid">
+
+    <div className="row justify-content-center p-2">
+      <div className="col-md-5 col-xs-12">
+        <img src={sideImage} alt="sideImage"
+          className="d-block w-100 img-fluid" />
+      </div>
+      <div className=" col-md-5 col-xs-12  p-5 mt-5 ">
+        <div className="text-center">
+          <h3 className="text-dark">Sign In</h3>
+        </div>
+        <div className="p-4">
+          <div className="input-group mb-3">
+            <span className="input-group-text"><i
+              className="bi bi-person-plus-fill text-white"></i></span>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              className="form-control"
+              onChange={handleInputChange}
+              placeholder="Email"
+            />
+          </div>
+          <div className="input-group mb-3">
+            <span className="input-group-text"><i
+              className="bi bi-key-fill text-white"></i></span>
+            <input
+              className="form-control"
+              type="password"
+              id="password"
+              name="password"
+              onChange={ handleInputChange}
+              placeholder="Password"
+            />
+          </div>
+
+          <div className=" form-check">
+            <input className="form-check-input" type="checkbox" value="" id="flexCheckDefault" onClick={ handleCheckbox}  checked={checked}/>
+            <label className="form-check-label" for="flexCheckDefault">
+              Remember Me
+            </label>
+          </div>
+          <button className="btn btn-dark text-center mt-2" type="submit"       disabled={buttonStatus} onClick={ handleSubmit}>
+            Login
+          </button>
+          <p className="text-center mt-5">Don't have an account?
+            <span className="text-primary" onClick={() => navigate("/register")}>Sign Up</span>
+          </p>
+          <p className="text-center text-primary">Forgot your password?</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+
+}
+
+export default Login;

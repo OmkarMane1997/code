@@ -1,0 +1,123 @@
+
+
+import React, { useState } from "react";
+import "./RegisterStyle.css";
+import sideImage from "../assets/image.png";
+import { loginUser } from "../slices/authSlice";
+ import { useDispatch } from "react-redux";
+  import { NavLink } from "react-router-dom";
+ import { useNavigate } from "react-router-dom";
+
+const Login = () => {
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const handleSubmit =  () => {
+    dispatch(loginUser({ email, password }))
+    // navigate('/dashboard')
+
+  }
+
+  return (
+    <div className="container shadow">
+      <div className="row mt-5">
+        <div className="col-12 col-sm-12 col-md-12 col-lg-5 col-xl-5 col-xxl-5 image-wrap p-0  d-lg-block d-none">
+          <img src={sideImage} className="img-fluid" alt="side"></img>
+        </div>
+
+        <div className="col-12 col-sm-12 col-md-12 col-lg-7 col-xl-7 col-xxl-7">
+          <div className="row">
+            <div className="col-12">
+              <div className="login-register-wrap float-end mt-3">
+                <button
+                  type="button"
+                  className="btn btn-dark mx-1 rounded-pill"
+                >
+                  Login
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-primary mx-1 rounded-pill"
+                >
+                  Register
+                </button>
+              </div>
+            </div>
+            <div className="text-center">
+              <h2>Sign In</h2>
+            </div>
+            <div className="form-wrap col-12 mx-auto">
+              <form  autoComplete="off">
+
+                <div className="form-group my-3 mx-5">
+                  <input
+                    type="email"
+                    name="email"
+                    placeholder="Email id"
+                    id="email"
+                    className="form-control form-control-lg"
+                    value={email}
+                    onChange={(e)=>setEmail(e.target.value)}
+                  />
+
+                </div>
+
+                <div className="form-group my-3 mx-5">
+                  <input
+                    type="password"
+                    name="password"
+                    id="password"
+                    placeholder="Password"
+                    className="form-control form-control-lg"
+                    value={password}
+                    onChange={(e)=>setPassword(e.target.value)}
+                  />
+
+                </div>
+
+                <div className="form-check my-3 mx-3">
+                  <input
+                    type="checkbox"
+                    name="terms"
+                    id="terms"
+                    className="mx-2"
+                    required
+                  />
+                  <label htmlFor="terms" className="text-secondary">
+
+                    Remember Me
+                  </label>
+                </div>
+
+                <div className="form-group my-3 mx-5">
+                  <input
+                    type="Submit"
+                  
+                    onClick={handleSubmit}
+                    value="Login"
+                    className="form-control form-control-lg btn btn-dark"
+                  />
+                </div>
+
+                <br></br>
+                <div className="fw-bold text-secondary mx-5">
+                  If no any account?{" "}
+                  <NavLink to={"/"} className="td-none">
+                    signup
+                  </NavLink>
+                </div>
+                <br></br>
+              </form>
+            </div>
+          </div>
+
+          <br />
+        </div>
+      </div>
+    </div>
+  );
+}
+export default Login
