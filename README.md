@@ -45,15 +45,15 @@ method:-Get<br>
 Data: NA.<br>
 header required:- refreshToken it generate the token need to pass the in header
 ++++++++++++++++++++++++++<br>
-Forgot password:-http://localhost:4000/api/v1/login/forgot-password
-method:- POST
+Forgot password:-http://localhost:4000/api/v1/login/forgot-password<br>
+method:- POST<br>
 Data:{
   "email":"omkarmane010197@gmail.com"
-}
+}<br>
 ++++++++++++++++++++++++++<br>
-login with Code-s api :- http://localhost:4000/api/v1/login/code-s
-method:- POST
-{
+login with Code-s api :- http://localhost:4000/api/v1/login/code-s<br>
+method:- POST<br>
+data:-{
   "email":"omkarmane0@gmail.com",
   "password":"Admin@1234"
 }
