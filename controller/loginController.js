@@ -281,6 +281,34 @@ const userLoginController={
            return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg:err.message})
           }
 },
+    loginWithCodeSApi: async (req,res)=>{
+      const {email,password}= req.body;
+      // console.log(req.body)
+         if (validator.isEmail(email)== false) {
+        return res.status(StatusCodes.BAD_REQUEST).json({ msg: " Enter Only Valid Email" }); 
+        }
+        // PassWord Validation and Return Password Score.
+        if (validator.isStrongPassword(password,{minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1})==false) {
+        return res.status(StatusCodes.BAD_REQUEST).json({ msg: `minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1, minSymbols: 1` });    
+        }
+
+        let findUser = `SELECT * FROM register WHERE email='${email}'`;
+        const result = await DBconnection(findUser)
+        // console.log(result);
+        // finding user in DB .
+        if (result.length > 0) {
+            //  console.log(result[0].password)
+            // checking the Password 
+            const isMatch = await bcrypt.compare(password ,result[0].password)
+            if (!isMatch) {
+              return res.status(StatusCodes.BAD_REQUEST).json({ msg: "Password Did not Match" });
+            }
+        return res.status(StatusCodes.OK).json({ result })
+        }else{
+       return res.status(StatusCodes.BAD_REQUEST).json({ msg: "User Doesn't exists.." })
+        }
+        
+    }
 
 
     

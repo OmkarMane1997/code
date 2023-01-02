@@ -70,7 +70,7 @@ const userRegistrationController={
                                 //  mail sending code here 
                                 const template = EmailVerificationLink(insert[0].name,link)
                                 const subject = `Email Verification Link`;
-                               await sendMail(email,subject,template)
+                              //  await sendMail(email,subject,template)
                       
 
 

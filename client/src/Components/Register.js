@@ -14,7 +14,8 @@ function Register() {
     password: "",
     confirmPassword: "",
   });
-  const [buttonStatus, setButtonStatus] = useState(false)
+  const [buttonStatus, setButtonStatus] = useState(false);
+  const [buttonName, setButtonName] = useState('Register');
   const URL =`http://localhost:4000/api/v1/registration`
 
   const navigate = useNavigate();
@@ -26,6 +27,7 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
     //name
     if (validator.isLength(userRegData.name, { min: 3 })=== false) {
      return toast.error("Name cannot be shorter than 3 characters.")
@@ -43,24 +45,28 @@ function Register() {
         return toast.error("Password is didn't Match")
       }
 
-
       // console.log(userRegData);
 
           try {
             // button disable when click 
+            setButtonName('Loading....');
             setButtonStatus(true)
             // console.log(`${URL}/register`)
             const result = await axios.post(`${URL}/register`, userRegData);
             // console.log('result:-',result);
             toast.success(result.data.msg);
             setButtonStatus(false);
-            navigate("/login");
+            // navigate("/login");
+          setButtonName('Register');
+
 
           } catch (err) {
             // console.log("err:-",err.response.data)
             toast.error(err.response.data.msg);
               // button disable when click 
             setButtonStatus(false)
+            setButtonName('Register');
+
           }
      
 
@@ -165,7 +171,7 @@ function Register() {
                   <input
                     type="Submit"
                     disabled={buttonStatus}
-                    value="Register"
+                    value={buttonName}
                     className="form-control form-control-lg btn btn-dark"
                   />
                 </div>

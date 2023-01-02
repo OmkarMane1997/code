@@ -7,7 +7,7 @@
     <div class="card-body"><p class="fw-bold">hi,  ${name}</p><p>We've received a request to Email Verification.</p><div class="d-flex justify-content-center my-4"><a href="${link}" class="btn btn-success btn-sm">Verification</a></div>
     <p>If you didn't make this request, just ignore this message.</p><br><p class="fw-bold"> Thanks,<br>The Code-S Team</p>
     <hr><p>If you are having trouble clicking the "Email Verification" button, copy and paste the URL below into your web browser:- ${link}</p></div>
-    </div></section></body></html`
+    </div></section></body></html>`
 }
 
 module.exports = EmailVerificationLink;
