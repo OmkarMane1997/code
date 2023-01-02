@@ -44,3 +44,16 @@ Profile:-http://localhost:4000/api/v1/login/profile<br>
 method:-Get<br>
 Data: NA.<br>
 header required:- refreshToken it generate the token need to pass the in header
+++++++++++++++++++++++++++<br>
+Forgot password:-http://localhost:4000/api/v1/login/forgot-password
+method:- POST
+Data:{
+  "email":"omkarmane010197@gmail.com"
+}
+++++++++++++++++++++++++++<br>
+login with Code-s api :- http://localhost:4000/api/v1/login/code-s
+method:- POST
+{
+  "email":"omkarmane0@gmail.com",
+  "password":"Admin@1234"
+}
