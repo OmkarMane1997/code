@@ -120,6 +120,41 @@ const userRegistrationController={
       } catch (err) {
         return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg:err.message})
       }
+    },
+    regWithGoogleLogin:async (req,res)=>{
+      try {
+        const {name,email}= req.body;
+         console.log(req.body);
+         const date = new Date()
+                let date2 = new Date(date.getTime() - (date.getTimezoneOffset() * 60000 ))
+                        .toISOString()
+                        .split("T")[0];
+        if (validator.isLength(name,{min:2 }) == false) {
+          return res.status(StatusCodes.BAD_REQUEST).json({ msg: "Enter min 3 Characters" });
+          }
+              // Validation of Email
+          if (validator.isEmail(email)== false) {
+          return res.status(StatusCodes.BAD_REQUEST).json({ msg: " Enter Only Valid Email" }); 
+          }
+          let findData = `SELECT * FROM register WHERE email='${email}'`;
+
+          let exitID = await DBconnection(findData);
+            console.log(exitID)
+            if (exitID.length==0) {
+              // console.log('yes')
+               //   Insert Query
+            let insertData = `INSERT INTO register (name, email,created_at,email_verification_status,email_verification_secrete) VALUES ("${name}","${email}","${date2}","1","DONE")`;
+            console.log(insertData);
+            let result = await DBconnection(insertData);
+            console.log(result);
+             return   res.status(StatusCodes.OK).json({ msg: " Registration SuccessFull"}); 
+            } else {
+              // console.log('No')
+            return res.status(StatusCodes.BAD_REQUEST).json({ msg: "Email id is already Exits process login!" });
+            }
+    } catch (err) {
+      return res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({msg:err.message})
+    }
     }
     
     
